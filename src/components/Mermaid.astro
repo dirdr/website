@@ -1,0 +1,47 @@
+<script>
+  const diagrams = Array.from(
+    document.querySelectorAll<HTMLElement>('.mermaid'),
+  );
+
+  if (diagrams.length > 0) {
+    const { default: mermaid } = await import('mermaid');
+    const sources = diagrams.map((element) => element.textContent ?? '');
+    let sequence = 0;
+
+    async function renderDiagrams() {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme:
+          document.documentElement.dataset.theme === 'dark'
+            ? 'dark'
+            : 'default',
+        fontFamily: 'Charter, Georgia, serif',
+      });
+
+      for (const [index, element] of diagrams.entries()) {
+        const source = sources[index] ?? '';
+        try {
+          const { svg, bindFunctions } = await mermaid.render(
+            `mermaid-${sequence++}`,
+            source,
+            element,
+          );
+          element.innerHTML = svg;
+          bindFunctions?.(element);
+        } catch (error) {
+          element.textContent = source;
+          console.error('Unable to render Mermaid diagram:', error);
+        }
+      }
+    }
+
+    let pending = renderDiagrams();
+    new MutationObserver(() => {
+      pending = pending.then(renderDiagrams);
+    }).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+</script>

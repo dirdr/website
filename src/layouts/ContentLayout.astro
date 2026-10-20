@@ -1,0 +1,26 @@
+---
+import Mermaid from '../components/Mermaid.astro';
+import BaseLayout from './BaseLayout.astro';
+import 'katex/dist/katex.min.css';
+
+interface Props {
+  title: string;
+  description?: string | undefined;
+  date?: Date;
+}
+
+const { title, description, date } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <article>
+    <h1>{title}</h1>
+    {date && (
+      <time datetime={date.toISOString()}>
+        {date.toISOString().slice(0, 10)}
+      </time>
+    )}
+    <slot />
+  </article>
+  <Mermaid />
+</BaseLayout>

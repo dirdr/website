@@ -1,0 +1,73 @@
+---
+import ThemeToggle from '../components/ThemeToggle.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string | undefined;
+}
+
+const { title, description } = Astro.props;
+const navigation = [
+  { href: '/', label: 'Home' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/blog/', label: 'Blog' },
+  { href: '/contact/', label: 'Contact' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {description && <meta name="description" content={description} />}
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        let theme;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch {
+        }
+        document.documentElement.dataset.theme =
+          theme === 'light' || theme === 'dark'
+            ? theme
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header page-width">
+      <a class="site-name" href="/">
+        Adrien Pelfresne
+      </a>
+      <nav aria-label="Main">
+        <ul>
+          {navigation.map(({ href, label }) => (
+            <li>
+              <a
+                href={href}
+                aria-current={Astro.url.pathname === href ? 'page' : undefined}
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <ThemeToggle />
+    </header>
+    <main class="page-width" id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer page-width">
+      <small>&copy; {new Date().getUTCFullYear()} Adrien Pelfresne</small>
+    </footer>
+  </body>
+</html>

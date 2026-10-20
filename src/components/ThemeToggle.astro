@@ -1,0 +1,79 @@
+<button
+  type="button"
+  id="theme-toggle"
+  aria-label="Dark theme"
+  aria-pressed="false"
+  title="Toggle theme"
+  hidden
+>
+  <svg
+    class="theme-moon"
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 10.607 10.607A9 9 0 1 1 12 3z" />
+  </svg>
+  <svg
+    class="theme-sun"
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4" />
+    <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" />
+  </svg>
+</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
+  const root = document.documentElement;
+  const preference = window.matchMedia('(prefers-color-scheme: dark)');
+  let explicit = false;
+
+  try {
+    const saved = localStorage.getItem('theme');
+    explicit = saved === 'dark' || saved === 'light';
+  } catch {
+  }
+
+  function syncButton() {
+    button?.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
+  }
+
+  if (button) {
+    syncButton();
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      explicit = true;
+      root.dataset.theme = theme;
+      try {
+        localStorage.setItem('theme', theme);
+      } catch {
+      }
+      syncButton();
+    });
+  }
+
+  preference.addEventListener('change', (event) => {
+    if (!explicit) {
+      root.dataset.theme = event.matches ? 'dark' : 'light';
+      syncButton();
+    }
+  });
+</script>
