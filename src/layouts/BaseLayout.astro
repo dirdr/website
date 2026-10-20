@@ -29,6 +29,7 @@ const navigation = [
         try {
           theme = localStorage.getItem('theme');
         } catch {
+          // Fall back to the system preference when storage is unavailable.
         }
         document.documentElement.dataset.theme =
           theme === 'light' || theme === 'dark'

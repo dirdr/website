@@ -49,6 +49,7 @@
     const saved = localStorage.getItem('theme');
     explicit = saved === 'dark' || saved === 'light';
   } catch {
+    // Use the system preference when storage is unavailable.
   }
 
   function syncButton() {
@@ -65,6 +66,7 @@
       try {
         localStorage.setItem('theme', theme);
       } catch {
+        // Keep the selected theme for this page when storage is unavailable.
       }
       syncButton();
     });
