@@ -5,7 +5,14 @@ import globals from 'globals';
 import ts from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist/**', '.astro/**', '.wrangler/**', 'node_modules/**']),
+  globalIgnores([
+    'dist/**',
+    '.astro/**',
+    '.wrangler/**',
+    'node_modules/**',
+    'wasm/**/target/**',
+    'public/demos/**/pkg/**',
+  ]),
   js.configs.recommended,
   ts.configs.recommended,
   ...astro.configs.recommended,

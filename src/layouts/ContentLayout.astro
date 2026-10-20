@@ -2,25 +2,159 @@
 import Mermaid from '../components/Mermaid.astro';
 import BaseLayout from './BaseLayout.astro';
 import 'katex/dist/katex.min.css';
+import RepositoryLink from '../components/RepositoryLink.astro';
 
 interface Props {
   title: string;
   description?: string | undefined;
-  date?: Date;
+  lastEdited?: Date | undefined;
+  repository?: string | undefined;
+  year?: number | undefined;
+  authors?: string[] | undefined;
+  originalMaterial?: string | undefined;
 }
 
-const { title, description, date } = Astro.props;
+const {
+  title,
+  description,
+  lastEdited,
+  repository,
+  year,
+  authors,
+  originalMaterial,
+} = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout description={description}>
   <article>
-    <h1>{title}</h1>
-    {date && (
-      <time datetime={date.toISOString()}>
-        {date.toISOString().slice(0, 10)}
-      </time>
-    )}
-    <slot />
+    <header class="content-header">
+      <div class="content-heading">
+        <h1 class="content-title">{title}</h1>
+        {year && <span class="content-year">{year}</span>}
+      </div>
+      {description && <p class="content-description">{description}</p>}
+      {authors && authors.length > 0 && (
+        <p class="content-authors">{authors.join(' - ')}</p>
+      )}
+      {(repository || originalMaterial) && (
+        <div class="source-links">
+          {repository && (
+            <RepositoryLink
+              href={repository}
+              title={title}
+              text="Repository source"
+            />
+          )}
+          {originalMaterial && (
+            <a class="material-source" href={originalMaterial}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6M8 13h8M8 17h5" />
+              </svg>
+              <span>Original material source</span>
+            </a>
+          )}
+        </div>
+      )}
+      {lastEdited && (
+        <time class="last-edited" datetime={lastEdited.toISOString()}>
+          Last edited{' '}
+          {lastEdited.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'UTC',
+          })}
+        </time>
+      )}
+    </header>
+    <div class="markdown-content">
+      <slot />
+    </div>
   </article>
   <Mermaid />
 </BaseLayout>
+
+<style>
+  .content-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--foreground) 12%, var(--background));
+  }
+
+  .content-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  .content-year {
+    flex-shrink: 0;
+    color: color-mix(in srgb, var(--foreground) 75%, var(--background));
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .content-description {
+    margin: 0.75rem 0 0;
+    color: color-mix(in srgb, var(--foreground) 75%, var(--background));
+    font-size: inherit;
+    line-height: inherit;
+    text-wrap: pretty;
+  }
+
+  .source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .material-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+    border-radius: 0.25rem;
+    color: inherit;
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .material-source svg {
+    flex-shrink: 0;
+  }
+
+  .material-source:hover {
+    background: color-mix(in srgb, var(--foreground) 6%, var(--background));
+  }
+
+  .material-source:hover span {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .content-authors {
+    margin: 0.75rem 0 0;
+    color: color-mix(in srgb, var(--foreground) 75%, var(--background));
+    font-size: 0.875rem;
+  }
+</style>

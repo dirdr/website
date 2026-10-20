@@ -5,6 +5,7 @@
   aria-pressed="false"
   title="Toggle theme"
   hidden
+  transition:persist="theme-toggle"
 >
   <svg
     class="theme-moon"
@@ -55,6 +56,10 @@
   function syncButton() {
     button?.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
   }
+
+  document.addEventListener('astro:before-swap', (event) => {
+    event.newDocument.documentElement.dataset.theme = root.dataset.theme;
+  });
 
   if (button) {
     syncButton();

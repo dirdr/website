@@ -1,15 +1,65 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import portrait from '../assets/about/adrien-pelfresne.jpg';
 ---
 
-<BaseLayout title="Home">
-  <h1>Lorem ipsum</h1>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua.
-  </p>
-  <p>
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat.
-  </p>
+<BaseLayout>
+  <div class="introduction-copy">
+    <Image
+      class="introduction-image"
+      src={portrait}
+      alt="Adrien Pelfresne"
+      widths={[320, 640, 960]}
+      sizes="(max-width: 26.5rem) calc(100vw - 2.5rem), 24rem"
+      loading="eager"
+      fetchpriority="high"
+    />
+    <p>
+      Hi there, I'm Adrien Pelfresne, a Software Engineer from Paris, France. I
+      like Distributed Systems, Observability and Great pieces of Software.
+    </p>
+    <p>
+      I hold an Engineering Degree <em>'Diplôme d'ingénieur'</em> from ESIEE
+      Paris and work at <a href="https://numspot.com">Numspot</a>. Read more
+      about my <a href="/resume/">experience</a>.
+    </p>
+    <p>
+      I share my <a href="/projects/">projects</a> and write{' '}
+      <a href="/writing/">articles</a> about whatever spark my curiosity at the
+      time.
+    </p>
+    <p>
+      Don't hesitate to reach out using the <a href="/contact/">contact</a>{' '}
+      page.
+    </p>
+    <p>I wish you a wonderfull day!</p>
+  </div>
 </BaseLayout>
+
+<style>
+  .introduction-copy {
+    display: flow-root;
+  }
+
+  .introduction-copy a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .introduction-image {
+    float: left;
+    display: block;
+    width: min(100%, 16rem);
+    height: auto;
+    border-radius: 0.25rem;
+    margin: 0 1.5rem 1rem 0;
+  }
+
+  @media (max-width: 640px) {
+    .introduction-image {
+      float: none;
+      margin: 0 0 1.5rem;
+    }
+  }
+</style>

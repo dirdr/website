@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const areas = (await getCollection('areas', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id),
+);
+---
+
+<BaseLayout>
+  {areas.length > 0 && (
+    <ul>
+      {areas.map((area) => (
+        <li>
+          <a href={`/areas/${area.id}/`}>{area.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>

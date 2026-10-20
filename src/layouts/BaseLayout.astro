@@ -1,28 +1,31 @@
 ---
 import ThemeToggle from '../components/ThemeToggle.astro';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
-  title: string;
   description?: string | undefined;
 }
 
-const { title, description } = Astro.props;
+const { description } = Astro.props;
 const navigation = [
   { href: '/', label: 'Home' },
   { href: '/projects/', label: 'Projects' },
-  { href: '/blog/', label: 'Blog' },
+  { href: '/areas/', label: 'Areas' },
+  { href: '/writing/', label: 'Writing' },
+  { href: '/resume/', label: 'Resume' },
   { href: '/contact/', label: 'Contact' },
 ];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" transition:animate="none">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {description && <meta name="description" content={description} />}
-    <title>{title}</title>
+    <title>Adrien Pelfresne</title>
+    <ClientRouter fallback="swap" />
     <script is:inline>
       (() => {
         let theme;
@@ -40,12 +43,12 @@ const navigation = [
       })();
     </script>
   </head>
-  <body>
+  <body transition:animate="none">
     <a class="skip-link" href="#main">
       Skip to content
     </a>
     <header class="site-header page-width">
-      <a class="site-name" href="/">
+      <a class="site-name" href="/" data-astro-prefetch="load">
         Adrien Pelfresne
       </a>
       <nav aria-label="Main">
@@ -54,6 +57,7 @@ const navigation = [
             <li>
               <a
                 href={href}
+                data-astro-prefetch="load"
                 aria-current={Astro.url.pathname === href ? 'page' : undefined}
               >
                 {label}
@@ -70,5 +74,23 @@ const navigation = [
     <footer class="site-footer page-width">
       <small>&copy; {new Date().getUTCFullYear()} Adrien Pelfresne</small>
     </footer>
+    <script>
+      function updateExternalLinks() {
+        document
+          .querySelectorAll<HTMLAnchorElement>('a[href]')
+          .forEach((link) => {
+            const url = new URL(link.href);
+            if (
+              !['http:', 'https:'].includes(url.protocol) ||
+              url.origin === location.origin
+            )
+              return;
+            link.target = '_blank';
+            link.relList.add('noopener', 'noreferrer');
+          });
+      }
+
+      document.addEventListener('astro:page-load', updateExternalLinks);
+    </script>
   </body>
 </html>

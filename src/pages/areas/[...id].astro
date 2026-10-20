@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+
+export async function getStaticPaths() {
+  const areas = await getCollection('areas', ({ data }) => !data.draft);
+  return areas.map((area) => ({
+    params: { id: area.id },
+    props: { area },
+  }));
+}
+
+interface Props {
+  area: CollectionEntry<'areas'>;
+}
+
+const { area } = Astro.props;
+const { Content } = await render(area);
+---
+
+<ContentLayout {...area.data}>
+  <Content />
+</ContentLayout>

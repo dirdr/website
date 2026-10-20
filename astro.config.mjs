@@ -1,6 +1,5 @@
 import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
-import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
@@ -8,9 +7,14 @@ import rehypeMermaid from './scripts/rehype-mermaid.mjs';
 
 export default defineConfig({
   output: 'static',
+  redirects: {
+    '/blog/': '/writing/',
+    '/blog/[...id]': '/writing/[...id]',
+  },
+  prefetch: true,
   integrations: [mdx()],
   vite: {
-    plugins: [tailwindcss()],
+    worker: { format: 'es' },
     optimizeDeps: { include: ['mermaid'] },
   },
   markdown: {

@@ -1,14 +1,21 @@
 <script>
-  const diagrams = Array.from(
-    document.querySelectorAll<HTMLElement>('.mermaid'),
-  );
+  let observer: MutationObserver | undefined;
+  let generation = 0;
+  let sequence = 0;
 
-  if (diagrams.length > 0) {
+  async function setupDiagrams() {
+    const currentGeneration = ++generation;
+    observer?.disconnect();
+    const diagrams = Array.from(
+      document.querySelectorAll<HTMLElement>('.mermaid'),
+      (element) => ({ element, source: element.textContent ?? '' }),
+    );
+    if (diagrams.length === 0) return;
     const { default: mermaid } = await import('mermaid');
-    const sources = diagrams.map((element) => element.textContent ?? '');
-    let sequence = 0;
+    if (currentGeneration !== generation) return;
 
     async function renderDiagrams() {
+      if (currentGeneration !== generation) return;
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
@@ -19,17 +26,19 @@
         fontFamily: 'Charter, Georgia, serif',
       });
 
-      for (const [index, element] of diagrams.entries()) {
-        const source = sources[index] ?? '';
+      for (const { element, source } of diagrams) {
+        if (currentGeneration !== generation || !element.isConnected) return;
         try {
           const { svg, bindFunctions } = await mermaid.render(
             `mermaid-${sequence++}`,
             source,
             element,
           );
+          if (currentGeneration !== generation || !element.isConnected) return;
           element.innerHTML = svg;
           bindFunctions?.(element);
         } catch (error) {
+          if (currentGeneration !== generation || !element.isConnected) return;
           element.textContent = source;
           console.error('Unable to render Mermaid diagram:', error);
         }
@@ -37,11 +46,18 @@
     }
 
     let pending = renderDiagrams();
-    new MutationObserver(() => {
+    observer = new MutationObserver(() => {
       pending = pending.then(renderDiagrams);
-    }).observe(document.documentElement, {
+    });
+    observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],
     });
   }
+
+  document.addEventListener('astro:before-swap', () => {
+    generation++;
+    observer?.disconnect();
+  });
+  document.addEventListener('astro:page-load', setupDiagrams);
 </script>

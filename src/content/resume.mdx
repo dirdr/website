@@ -1,0 +1,67 @@
+---
+title: Resume
+---
+
+import ResumeEntry from '../components/ResumeEntry.astro';
+
+## Experience
+
+<ResumeEntry
+  title="Software Engineer"
+  period="Oct 2026 - Present"
+  organization="Numspot"
+  href="https://numspot.com"
+/>
+
+<ResumeEntry
+  title="Backend Software Engineer"
+  period="Sep 2025 - Present"
+  organization="BPCE-IT"
+>
+
+- Built a Java CI/CD security gate plugin for CI platforms, normalizing vulnerability data from Checkmarx SAST and JFrog Xray SCA into a unified policy API for centralized compliance enforcement.
+- Designed and owned an end-to-end user action campaign feature (Spring Boot/Angular): a bulk CSV ingestion pipeline processing millions of entries asynchronously, RBAC-enforced admin/manager/user workflows, and real-time campaign tracking; reduced campaign management from hours to seconds.
+
+</ResumeEntry>
+
+<ResumeEntry
+  title="Co-Founder & Backend/Infrastructure Engineer"
+  period="Nov 2025 - Present"
+  organization="Palarena"
+  href="https://palarena.com"
+  context="Sport Club Management SaaS · Side project"
+>
+
+- Designed and own the full infrastructure layer: Kubernetes cluster provisioning, GitOps delivery (ArgoCD), and CI/CD pipelines enabling automated multi-environment promotion (dev/staging/prod).
+- Developed core backend services (booking engine, club management APIs, player matching), handling multi-tenancy and concurrency from day one.
+
+</ResumeEntry>
+
+<ResumeEntry
+  title="Software Engineer - DevSecOps"
+  period="Sep 2022 - Aug 2025"
+  organization="Banque de France"
+  context="Work-study program"
+>
+
+- Led development and product ownership of an SBOM management platform (Spring/PostgreSQL/Angular), automating security analysis across 200+ applications for 600+ users.
+- Managed production OpenShift cluster infrastructure; handled CI/CD deployments via Jenkins and monitoring stack configuration (Prometheus/Grafana/Loki).
+- Implemented automated compliance checks using Artifactory Xray, reducing manual audit workload and providing real-time visibility into organizational security posture.
+
+</ResumeEntry>
+
+## Education
+
+<ResumeEntry
+  title="Diplôme d'Ingénieur"
+  period="Graduated Aug 2025"
+  organization="ESIEE Paris"
+  context="M.Sc. equivalent in Software Engineering · Work-study program"
+/>
+
+<ResumeEntry
+  title="Master in Innovation and Research in Informatics"
+  period="Sep 2024 - Jan 2025"
+  organization="Universitat Politècnica de Catalunya"
+  context="Exchange semester"
+/>

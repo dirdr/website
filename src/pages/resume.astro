@@ -1,0 +1,44 @@
+---
+import Content from '../content/resume.mdx';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout>
+  <article class="resume">
+    <h1 class="resume-title">Resume</h1>
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  .resume {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .resume-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .resume :global(h2) {
+    margin: 2rem 0 0.875rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--foreground) 18%, var(--background));
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .resume :global(h2:first-of-type) {
+    margin-top: 0;
+  }
+</style>

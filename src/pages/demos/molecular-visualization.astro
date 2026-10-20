@@ -1,0 +1,64 @@
+---
+import '../../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Molecular Visualization — Adrien Pelfresne</title>
+    <script is:inline>
+      document.documentElement.dataset.theme =
+        new URLSearchParams(location.search).get('theme') === 'dark'
+          ? 'dark'
+          : 'light';
+    </script>
+  </head>
+  <body>
+    <main>
+      <canvas
+        id="molecular-canvas"
+        width="700"
+        height="450"
+        tabindex="0"
+        aria-label="Interactive molecule. Drag to rotate, scroll to zoom. Arrow keys rotate; plus and minus zoom; R resets."
+      ></canvas>
+      <p id="molecule-status" role="status">
+        Loading molecule…
+      </p>
+      <noscript>This demo needs JavaScript and WebGL 2.</noscript>
+    </main>
+    <script>
+      import '../../scripts/demos/molecular';
+    </script>
+  </body>
+</html>
+
+<style>
+  body {
+    min-height: 0;
+  }
+  main {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: clamp(280px, 58vw, 440px);
+    border-radius: 0.25rem;
+    background: #111;
+    cursor: grab;
+    touch-action: none;
+  }
+  canvas:active {
+    cursor: grabbing;
+  }
+  #molecule-status {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+  }
+</style>

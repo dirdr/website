@@ -4,3 +4,5 @@ dist/
 .wrangler/
 package-lock.json
 public/fonts/
+wasm/**/target/
+public/demos/**/pkg/
