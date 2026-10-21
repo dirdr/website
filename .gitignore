@@ -10,3 +10,5 @@ dist/
 *.log
 .DS_Store
 wasm/**/target/
+test-results/
+playwright-report/
