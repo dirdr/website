@@ -30,10 +30,7 @@ async function load() {
     const url = new URL(path, location.origin);
     if (url.origin !== location.origin)
       throw new Error('Molecule files must be hosted on this site.');
-    const moduleUrl = new URL(
-      '/demos/molecular-visualization/viewer.js',
-      location.origin,
-    ).href;
+    const moduleUrl = `${location.origin}/demos/molecular-visualization/viewer.js`;
     const [module, response] = await Promise.all([
       import(/* @vite-ignore */ moduleUrl) as Promise<{
         mountMolecule: typeof mountMolecule;

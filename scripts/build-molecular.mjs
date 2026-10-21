@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
-import { delimiter, join } from 'node:path';
+import { basename, delimiter, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -40,16 +40,18 @@ try {
     'web',
     '--locked',
   ]);
-  await mkdir(destination, { recursive: true });
   await mkdir(join(destination, 'pkg'), { recursive: true });
   for (const name of await readdir(join(checkout, 'web/pkg'))) {
     if (name.endsWith('.js') || name.endsWith('.ts') || name.endsWith('.wasm'))
       await cp(join(checkout, 'web/pkg', name), join(destination, 'pkg', name));
   }
-  for (const name of ['viewer.js', 'viewer.d.ts'])
-    await cp(join(checkout, 'web', name), join(destination, name));
-  for (const name of ['LICENSE-MIT', 'LICENSE-APACHE'])
-    await cp(join(checkout, name), join(destination, name));
+  for (const name of [
+    'web/viewer.js',
+    'web/viewer.d.ts',
+    'LICENSE-MIT',
+    'LICENSE-APACHE',
+  ])
+    await cp(join(checkout, name), join(destination, basename(name)));
   await cp(join(checkout, 'resources/pdb'), join(destination, 'pdb'), {
     recursive: true,
   });
