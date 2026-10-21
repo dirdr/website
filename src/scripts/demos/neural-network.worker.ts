@@ -1,7 +1,7 @@
 export {};
 
 interface Model {
-  predict(pixels: Float64Array): Float64Array;
+  predict(pixels: Float32Array): Float32Array;
 }
 
 interface WasmModule {

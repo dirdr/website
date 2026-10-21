@@ -20,47 +20,35 @@ origin and window. Demo workers and animation loops must stop when their page cl
 
 ## Neural network
 
-Prediction runs in a Web Worker using Rust compiled to WebAssembly. The UI uses a
-canvas with pointer input. Drawings are fitted to a 20×20 box in a 28×28 image,
-centered by their intensity, and normalized before prediction. Drawings stay local.
+The browser loads the saved weights from `model.bin` and the Rust WebAssembly
+module in a Web Worker. TypeScript converts each drawing into a centered 28×28
+image, then Rust runs the 784 → 128 → 10 network and returns ten scores for
+the histogram. All inference stays on the visitor's device; no training runs.
 
-The model follows the report's MLP: 784 → 256 → 256 → 10, ReLU in each hidden
-layer, softmax output, cross entropy, SGD with learning rate 0.04, batch size 100,
-and 15 epochs. Its weights were trained for this browser demo; they are not the
-original experiment's weights. `model-info.json` records the exported model's score
-on all 10,000 held-out MNIST test images. No augmentation is applied in this training run.
+The adapter uses the upstream [`nn_lib`](https://github.com/AlexVplle/nn_lib/tree/b57ac76b2306b9ec418e0cc4ddbb62cfc8fa846f),
+pinned to the latest revision checked during this update. Cargo downloads the
+library when rebuilding Wasm; its source is not copied into this repository.
+The weights were retrained with that upstream revision on 50,000 MNIST training
+images. The best checkpoint was selected from 20 epochs using 10,000 separate
+validation images; the final model scores 97.73% on the untouched 10,000-image
+test set. Training used cross entropy, SGD (learning rate 0.12), batches of 100,
+and no augmentation. Training code and datasets remain outside this repository.
 
-The original library is vendored from
-[`3bad77a`](https://github.com/dirdr/neural_network_from_scratch/tree/3bad77a01a17f817071cf21b7090eabe0805e035/nn_lib).
-Its licenses are included. Changes add dense parameter loading/export and disable
-native threading for WebAssembly. Prediction and training use the original layer code.
+`model.bin` is 102,740 bytes. Its `MNQ1` format stores each dense layer's per-output
+f32 scales, f32 biases, and signed 8-bit weights in row-major order. The adapter
+decodes weights to upstream f32 tensors once at startup; inference itself uses
+f32 arithmetic. This reduces the former 2,154,580-byte weight file by 95.2%.
 
-### Build
-
-Install Rust through Rustup, the `wasm32-unknown-unknown` target, and `wasm-pack`.
+Install Rust, the `wasm32-unknown-unknown` target, and `wasm-pack`, then run:
 
 ```sh
 rustup target add wasm32-unknown-unknown
 npm run build:wasm
 ```
 
-The generated JS and Wasm files are checked in, so regular `npm run build` and
-hosting do not need Rust. Rebuild them when Rust code changes.
-
-### Train and export
-
-Use the four uncompressed MNIST IDX files (`train-*` and `t10k-*`). The dataset is
-not shipped with the website. Run from the repository root:
-
-```sh
-cargo run --release --manifest-path wasm/neural-network/Cargo.toml --bin train -- /path/to/mnist/raw public/demos/neural-network 15
-cargo test --manifest-path wasm/neural-network/Cargo.toml
-```
-
-Training replaces `model.bin`, `model-info.json`, and `examples.bin`. The binary
-format starts with `MNP1`, followed by little-endian f64 weights and biases for
-each dense layer in row-major order. Loading rejects unexpected lengths and
-non-finite parameters. The examples contain one held-out image per digit.
+The generated JavaScript and Wasm are checked in. Regular website builds and
+hosting need no Rust toolchain or GitHub access. The ten held-out images in
+`scripts/fixtures/mnist-examples.bin` are used only by the inference tests.
 
 ## Molecular visualization
 

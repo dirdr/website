@@ -24,7 +24,7 @@ let pointerId: number | undefined;
 let requestId = 0;
 let scheduled = 0;
 let busy = false;
-let queued: Float64Array | undefined;
+let queued: Float32Array | undefined;
 
 function resetScores() {
   prediction.textContent = 'Draw a digit';
@@ -44,7 +44,7 @@ function reset() {
   resetScores();
 }
 
-function normalizedPixels(): Float64Array | undefined {
+function normalizedPixels(): Float32Array | undefined {
   if (!context) return;
   const data = context.getImageData(0, 0, 280, 280).data;
   let left = 280,
@@ -82,7 +82,7 @@ function normalizedPixels(): Float64Array | undefined {
     height * scale,
   );
   const smallData = smallContext.getImageData(0, 0, 28, 28).data;
-  const pixels = new Float64Array(784);
+  const pixels = new Float32Array(784);
   let mass = 0,
     centerX = 0,
     centerY = 0;
@@ -96,7 +96,7 @@ function normalizedPixels(): Float64Array | undefined {
   if (!mass) return;
   const dx = Math.round(13.5 - centerX / mass),
     dy = Math.round(13.5 - centerY / mass);
-  const centered = new Float64Array(784);
+  const centered = new Float32Array(784);
   for (let y = 0; y < 28; y++) {
     for (let x = 0; x < 28; x++) {
       const sx = x - dx,
@@ -108,7 +108,7 @@ function normalizedPixels(): Float64Array | undefined {
   return centered;
 }
 
-function send(pixels: Float64Array) {
+function send(pixels: Float32Array) {
   requestId++;
   if (busy) {
     queued = pixels;
@@ -196,7 +196,7 @@ worker.onmessage = (event: MessageEvent) => {
   } else if (message.type === 'prediction') {
     busy = false;
     if (message.id === requestId) {
-      const scores = message.scores as Float64Array;
+      const scores = message.scores as Float32Array;
       const best = scores.indexOf(Math.max(...scores));
       prediction.textContent = `Prediction: ${best}`;
       rows.forEach(({ row, meter, score }, digit) => {

@@ -1,8 +1,8 @@
 ---
-import Mermaid from '../components/Mermaid.astro';
 import BaseLayout from './BaseLayout.astro';
 import 'katex/dist/katex.min.css';
 import RepositoryLink from '../components/RepositoryLink.astro';
+import Mermaid from '../components/Mermaid.astro';
 
 interface Props {
   title: string;
@@ -108,7 +108,7 @@ const {
   .content-year {
     flex-shrink: 0;
     color: color-mix(in srgb, var(--foreground) 75%, var(--background));
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-variant-numeric: tabular-nums;
   }
 

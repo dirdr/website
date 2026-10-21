@@ -9,50 +9,37 @@ authors:
   - Alexis VAPAILLE
 ---
 
+> [!NOTE]
+> This page adapts a report we wrote with Alexis VAPAILLE for the _“Deep Learning”_ course in ESIEE Paris. The original report is linked above under “Original material source.”
+>
+> This page covers the initial implementation. Alexis has since improved the code:
+>
+> - Reorganized layer modules.
+> - f32 tensor system with storage, layouts, strides, and tensor operations.
+> - MacOS Metal GPU backend.
+> - Updated layer APIs, and device selection
+> - Confusion matrices and expanded classification metrics, including macro/weighted precision, recall, and F1.
+
+## Play
+
+Before the theory deep dive, please try out our model! It run locally in your browser, through a WebAssembly port of the latest upstream rust code
+
 <web-demo data-src="/demos/neural-network/" data-title="Draw a digit"></web-demo>
 
-## Contents
+![Neural net go brr: WebAssembly inference in the browser.](../../assets/projects/neural-network-from-scratch/neural-go-brr.png)
 
-- [Abstract](#abstract)
-- [Motivation](#motivation)
-- [Sequential neural network](#sequential-neural-network)
-  - [General layer interface](#general-layer-interface)
-  - [Dense layer](#dense-layer)
-  - [Activation layer](#activation-layer)
-- [Cost function](#cost-function)
-- [The learning process](#the-learning-process)
-  - [Gradient](#gradient)
-  - [Minimization](#minimization)
-  - [backpropagation](#backpropagation)
-  - [Dense layer backpropagation](#dense-layer-backpropagation)
-  - [Activation layer backpropagation](#activation-layer-backpropagation)
-- [Optimizers](#optimizers)
-  - [Adam](#adam)
-- [Batching](#batching)
-- [Initializer](#initializer)
-- [Convolutional neural network](#convolutional-neural-network)
-  - [Convolutional layer](#convolutional-layer)
-  - [Convolutional layer backpropagation](#convolutional-layer-backpropagation)
-    - [Gradient with respect to the input X](#gradient-with-respect-to-the-input-xxx)
-    - [Gradient with respect to the weights (filters):](#gradient-with-respect-to-the-weights-filters)
-    - [Gradient with respect to the biases:](#gradient-with-respect-to-the-biases)
-  - [Pooling layer](#pooling-layer)
-  - [Max pooling layer backpropagation](#max-pooling-layer-backpropagation)
-- [Metrics](#metrics)
-- [Training, Validation, and Test Sets](#training-validation-and-test-sets)
-- [Results](#results)
-  - [Network declaration](#network-declaration)
-  - [Vapnik–Chervonenkis tradeoff](#vapnikchervonenkis-tradeoff)
-  - [Multi-layer perceptron](#multi-layer-perceptron)
-    - [Overfitting](#overfitting)
-    - [Greatfitting](#greatfitting)
-  - [Convolutional multi-layer perceptron](#convolutional-multi-layer-perceptron)
-- [Conclusion](#conclusion)
+The model flattens the 28x28 Grayscale image then passes it through:
+
+784 inputs -> Dense (128 neurons) -> ReLU -> Dense (10 neurons) → Softmax
+
+The outputs give a probability for each digit.The network has 101,770 trainable parameters, including biases, stored in a 102.7 KB model file.
+
+I trained it on 50,000 images for 20 epochs using cross-entropy loss and SGD, learning rate of 0.12, batches of 100. It achieved 97.73% accuracy on the 10,000 images of the test data set.
 
 ## Abstract
 
-_We have created a deep neural network library from scratch, in rust, without the use of any machine learning or deep learning library.\
-The goal of this project was to solve the mnist dataset of handwritten digits and to provide a performance comparison between two multi-layer perceptrons, with and without convolution.\
+We have created a deep neural network library from scratch, in rust, without the use of any machine learning or deep learning library.
+The goal of this project was to solve the mnist dataset of handwritten digits and to provide a performance comparison between two multi-layer perceptrons, with and without convolution.
 Our library lets you create your sequential neural network, with a simple and declarative API and is widely open to extension. This project also includes a drawing mode, where you can draw your digit and see what each model guesses. The project is in a WIP stage, but we plan to improve it further shortly_
 
 ## Motivation
@@ -116,8 +103,8 @@ Y = XW + B
 $$
 
 <!-- prettier-ignore -->
-with $Y \in \mathbb{R}^j$, $X \in \mathbb{R}^i$, $W \in M_{i*j}(\mathbb{R})$ and $B \in \mathbb{R}^j$\
-In this report, we will annotate vectors : $X \in \mathbb{R}^N$, but note that to be able to do the matmul in practice, a vector will be broadcasted to a matrix $M_{1*i} (\mathbb{R})$
+with $Y \in \mathbb{R}^j$, $X \in \mathbb{R}^i$, $W \in M_{i \times j}(\mathbb{R})$ and $B \in \mathbb{R}^j$\
+In this report, we will annotate vectors : $X \in \mathbb{R}^N$, but note that to be able to do the matmul in practice, a vector will be broadcasted to a matrix $M_{1 \times i}(\mathbb{R})$
 
 ### Activation layer
 
@@ -139,7 +126,7 @@ The Activation layer takes a vector $X \in \mathbb{R}^n$ as input and produces a
 We must note that some activations function transform a vector by mapping the vector individual components $x$ through the function, like ReLU
 
 $$
-ReLU(x) = max(0, x)
+\operatorname{ReLU}(x) = \max(0, x)
 $$
 
 While other activation functions, like _softmax_ work on whole vectors. Softmax takes a vector $z \in \mathbb{R}^K$, and converts it into a probability distribution of $K$ possible outcomes.
@@ -148,7 +135,7 @@ $$
 \sigma : \mathbb{R}^{K} \rightarrow (0, 1)^K, K \geq 1
 $$
 
-is computed by taking a vector $z = (z_1, ..., z_k) \in \mathbb{R}^K$ and compute each component of a vector $\sigma(\mathbf{z}) \in (0, 1)^K$
+is computed by taking a vector $z = (z_1, \ldots, z_k) \in \mathbb{R}^K$ and compute each component of a vector $\sigma(\mathbf{z}) \in (0, 1)^K$
 
 $$
 \sigma(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{j = 1}^{K} e^{z_j}}
@@ -219,7 +206,7 @@ Here is the process for a single gradient descent step :
 
 ### backpropagation
 
-To do a gradient descent step, we need the gradient of the cost function with respect to the neural network parameters $\frac{\partial C}{\partial P}$ the algorithm used to calculate this gradient is called **backpropagation**.\
+To do a gradient descent step, we need the gradient of the cost function with respect to the neural network parameters $\frac{\partial C}{\partial P}$. The algorithm used to calculate this gradient is called **backpropagation**.\
 Backpropagation precisely calculate (and not only estimate like the finite difference method) the gradient of the cost function $C$ with respect to the neural network parameters, which we will call parameters gradient $\frac{\partial C}{\partial P}$.\
 The key mathematical tool used in backpropagation is the chain rule, which allows the gradient of the cost function to be split into a gradient of simpler functions at each neuron within the network.\
 For each layer, $L_n$, to calculate the parameter's gradient $\frac{\partial C}{\partial P_n}$, we need to know the output gradient $\frac{\partial C}{\partial Y_n}$, this gradient is given to us by the next layer in the sequential order, because in the sequential architecture $\frac{\partial C}{\partial X_{n+1}} = \frac{\partial C}{\partial Y_n}$. We want to also calculate $\frac{\partial C}{\partial X_i}$, the input $X$ gradient, to transmit it to the previous layer, which needs it to calculate her own parameters gradient $\frac{\partial C}{\partial P_{i-1}}$.\
@@ -270,7 +257,7 @@ $$
 So finally
 
 $$
-\frac{\partial C}{\partial W} = X^{T} \frac{\partial C}{dY}
+\frac{\partial C}{\partial W} = X^{T} \frac{\partial C}{\partial Y}
 $$
 
 for the biases $B$.
@@ -278,7 +265,7 @@ for the biases $B$.
 $$
 \begin{aligned}
         \frac{\partial C}{\partial b} &= \frac{\partial C}{\partial Y} \frac{\partial Y}{\partial b}\\
-        \frac{\partial C}{\partial b_{i}} &= \sum_{l=1}^{N} \frac{\partial C}{\partial Y_{li}} \frac{\partial Y_{li}}{db}
+        \frac{\partial C}{\partial b_{i}} &= \sum_{l=1}^{N} \frac{\partial C}{\partial Y_{li}} \frac{\partial Y_{li}}{\partial b_i}
 \end{aligned}
 $$
 
@@ -289,7 +276,7 @@ $$
 $$
 
 $$
-\frac{\partial C}{db_{i}} = \sum_{l=1}^{N} \frac{\partial C}{\partial Y_{li}}
+\frac{\partial C}{\partial b_i} = \sum_{l=1}^{N} \frac{\partial C}{\partial Y_{li}}
 $$
 
 $$
@@ -326,7 +313,7 @@ $$
 
 ### Activation layer backpropagation
 
-An activation layer doesn't have any trainable parameters, We just need to calculate the input gradient.\
+An activation layer doesn't have any trainable parameters. We just need to calculate the input gradient.\
 We are given the output gradient $\frac{\partial C}{\partial Y}$, we know that
 
 $$
@@ -355,18 +342,18 @@ $$
 using the same procedure as for the previous calculations
 
 $$
-\implies \frac{\partial C}{\partial X} = \frac{\partial C}{\partial Y} \odot Y\prime
+\implies \frac{\partial C}{\partial X} = \frac{\partial C}{\partial Y} \odot Y'
 $$
 
 with
 
 $$
 \begin{aligned}
-        Y\prime &= \begin{bmatrix}
-        f\prime(X_1) \\
-        f\prime(X_2) \\
+        Y' &= \begin{bmatrix}
+        f'(X_1) \\
+        f'(X_2) \\
         \vdots \\
-        f\prime(X_i)
+        f'(X_i)
     \end{bmatrix}
 \end{aligned}
 $$
@@ -379,7 +366,7 @@ $$
 \theta := \theta - \eta \frac{\partial C}{\partial \theta}
 $$
 
-Updating the neural network layers parameters with this method is known, in the Keras API, as the _Stochastic gradient descent optimizer_, but other ways of updating layer parameters exist, we call those alternative methods **optimizers**. One of the best ones is Adam (Kingma and Ba 2017)
+Updating the neural network layers parameters with this method is known, in the Keras API, as the _Stochastic gradient descent optimizer_, but other ways of updating layer parameters exist, we call those alternative methods **optimizers**. One of the best ones is Adam [\[5\]](#reference-5).
 
 ### Adam
 
@@ -420,7 +407,7 @@ ADAM initializes two vectors, $m$ and $v$, which store the exponential moving av
 ## Batching
 
 We went through several feed-forward implementations in our code. The first one was to pass data points $x \in \mathbb{R}^{i}$ one by one, in the network. This was very slow, for example, for the mnist dataset, which has 60k training examples, we were going through the whole neural network: feed forward, cost evaluation, and back-propagation 60k times.\
-We then learned that we can adapt our code to pass _a batch_ of data to the neural network, this batch can be of any length. The input then becomes, $x \in M_{n*i} (\mathbb{R})$ with each line of the input matrix representing a single data point. The calculation became much faster because we can now feed $n$ element at a time in the neural network.
+We then learned that we can adapt our code to pass _a batch_ of data to the neural network, this batch can be of any length. The input then becomes, $x \in M_{n \times i}(\mathbb{R})$ with each line of the input matrix representing a single data point. The calculation became much faster because we can now feed $n$ element at a time in the neural network.
 
 ## Initializer
 
@@ -622,7 +609,7 @@ The mnist dataset, is a classification problem, we can implement multiple metric
    \text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Predictions}}
    $$
 
-   Precision and Recall are two metrics acting on a specified class. **Retrieved elements** are all the network predictions for a specific class. **Relevant elements** are all the correct instances of the class (<span class="nocase">contributors</span> 2024).
+   Precision and Recall are two metrics acting on a specified class. **Retrieved elements** are all the network predictions for a specific class. **Relevant elements** are all the correct instances of the class [\[2\]](#reference-2).
 
 2. Precision answer the question : _How many retrieved items are relevant_
 
@@ -680,7 +667,7 @@ The layers are added in sequential order with the push method. the _watch_ metho
 
 ### Vapnik–Chervonenkis tradeoff
 
-To create a great network, we will try to reach the _VC trade-off principle_ (LeCun 2019) (Vapnik and Chervonenkis 1974), this principle states that:
+To create a great network, we will try to reach the _VC trade-off principle_ [\[7\]](#reference-7) [\[9\]](#reference-9), this principle states that:
 
 1. A more complex model might fit the training data very well (low training error) but risks overfitting, meaning it could perform poorly on new data because it is too tailored to the training set (high variance).
 
@@ -835,90 +822,54 @@ This project of creating our own _from scratch_ library has brought us a lot of 
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<span id="reference-1"></span>
 
-<div id="ref-he_initialization" class="csl-entry">
+[1] Papers with Code. “He Initialization”. n.d. <https://paperswithcode.com/method/he-initialization>.
 
-Code, Papers with. n.d. “He Initialization.” n.d. <https://paperswithcode.com/method/he-initialization>.
+<span id="reference-2"></span>
 
-</div>
+[2] Wikipedia contributors. 2024. _Precision and Recall - Wikipedia, the Free Encyclopedia_. <https://en.wikipedia.org/wiki/Precision_and_recall>.
 
-<div id="ref-wiki_precision_recall" class="csl-entry">
+<span id="reference-3"></span>
 
-<span class="nocase">contributors, Wikipedia</span>. 2024. _Precision and Recall — Wikipedia, the Free Encyclopedia_. <https://en.wikipedia.org/wiki/Precision_and_recall>.
+[3] Stack Exchange. 2016. “Backpropagation with Softmax Cross Entropy.” <https://stats.stackexchange.com/questions/235528/backpropagation-with-softmax-cross-entropy>.
 
-</div>
+<span id="reference-4"></span>
 
-<div id="ref-backpropagation_softmax_cross_entropy" class="csl-entry">
+[4] Google. 2024. “Cross Entropy.” <https://www.google.com/search?q=cross+entropy&sourceid=chrome&ie=UTF-8>.
 
-Exchange, Stack. 2016. “Backpropagation with Softmax Cross Entropy.” <https://stats.stackexchange.com/questions/235528/backpropagation-with-softmax-cross-entropy>.
+<span id="reference-5"></span>
 
-</div>
+[5] Kingma, Diederik P., and Jimmy Ba. 2017. _Adam: A Method for Stochastic Optimization_. <https://arxiv.org/abs/1412.6980>.
 
-<div id="ref-cross_entropy_search" class="csl-entry">
+<span id="reference-6"></span>
 
-Google. 2024. “Cross Entropy.” <https://www.google.com/search?q=cross+entropy&sourceid=chrome&ie=UTF-8>.
+[6] V7 Labs. “A Guide to Cross-Entropy Loss”. n.d. <https://www.v7labs.com/blog/cross-entropy-loss-guide>.
 
-</div>
+<span id="reference-7"></span>
 
-<div id="ref-kingma2017adam" class="csl-entry">
+[7] LeCun, Yann. 2019. _Quand La Machine Apprend: La révolution Des Neurones Artificiels Et de l'apprentissage Profond_. Odile Jacob.
 
-Kingma, Diederik P., and Jimmy Ba. 2017. _Adam: A Method for Stochastic Optimization_. <https://arxiv.org/abs/1412.6980>.
+<span id="reference-8"></span>
 
-</div>
+[8] Towards Data Science. 2019. “Derivative of the Softmax Function and the Categorical Cross Entropy Loss.” <https://towardsdatascience.com/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1>.
 
-<div id="ref-cross_entropy_loss_guide" class="csl-entry">
+<span id="reference-9"></span>
 
-Labs, V7. n.d. “A Guide to Cross-Entropy Loss.” n.d. <https://www.v7labs.com/blog/cross-entropy-loss-guide>.
+[9] Vapnik, Vladimir, and Alexey Chervonenkis. 1974. _Theory of Pattern Recognition_.
 
-</div>
+<span id="reference-10"></span>
 
-<div id="ref-LeCun2019" class="csl-entry">
+[10] Wikipedia. 2024a. “Hadamard Product (Matrices).” <https://en.wikipedia.org/wiki/Hadamard_product_(matrices)>.
 
-LeCun, Yann. 2019. _Quand La Machine Apprend: La révolution Des Neurones Artificiels Et de l'apprentissage Profond_. Odile Jacob.
+<span id="reference-11"></span>
 
-</div>
+[11] Wikipedia. 2024b. “One-Hot.” <https://en.wikipedia.org/wiki/One-hot>.
 
-<div id="ref-derivative_softmax_cross_entropy" class="csl-entry">
+<span id="reference-12"></span>
 
-Science, Towards Data. 2019. “Derivative of the Softmax Function and the Categorical Cross Entropy Loss.” <https://towardsdatascience.com/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1>.
+[12] Wikipedia. 2024d. “Softmax Function.” <https://en.wikipedia.org/wiki/Softmax_function>.
 
-</div>
+<span id="reference-13"></span>
 
-<div id="ref-vapnik1974theory" class="csl-entry">
-
-Vapnik, Vladimir, and Alexey Chervonenkis. 1974. _Theory of Pattern Recognition_.
-
-</div>
-
-<div id="ref-hadamard_product" class="csl-entry">
-
-Wikipedia. 2024a. “Hadamard Product (Matrices).” <https://en.wikipedia.org/wiki/Hadamard_product_(matrices)>.
-
-</div>
-
-<div id="ref-one_hot" class="csl-entry">
-
-Wikipedia. 2024b. “One-Hot.” <https://en.wikipedia.org/wiki/One-hot>.
-
-</div>
-
-<div id="ref-precision_and_recall" class="csl-entry">
-
-Wikipedia. 2024c. “Precision and Recall.” <https://en.wikipedia.org/wiki/Precision_and_recall>.
-
-</div>
-
-<div id="ref-softmax_function" class="csl-entry">
-
-Wikipedia. 2024d. “Softmax Function.” <https://en.wikipedia.org/wiki/Softmax_function>.
-
-</div>
-
-<div id="ref-matrice_jacobienne" class="csl-entry">
-
-Wikipédia. 2024. “Matrice Jacobienne.” <https://fr.wikipedia.org/wiki/Matrice_jacobienne>.
-
-</div>
-
-</div>
+[13] Wikipédia. 2024. “Matrice Jacobienne.” <https://fr.wikipedia.org/wiki/Matrice_jacobienne>.

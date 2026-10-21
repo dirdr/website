@@ -6,14 +6,12 @@ originalMaterial: https://github.com/dirdr/a_homophily_and_triadic_closure_model
 description: Generative model of social network formation
 ---
 
-Adrien Pelfresne, [adrien.pelfresne@estudiantat.upc.edu](mailto:adrien.pelfresne@estudiantat.upc.edu)
-
-Facultat d'Informàtica de Barcelona  
-Master in Innovation and Research in Informatics: Complex and Social Network
+> [!NOTE]
+> This page adapts a report I wrote for the _“Complex and Social Network”_ course in the Master in Innovation and Research in Informatics at the Facultat d’Informàtica de Barcelona. The original report is linked above under “Original material source.”
 
 ## Abstract
 
-This research project presents a generative model for social network formation based on homophily and triadic closure. The model generates network structures by evaluating agent similarity metrics and shared neighborhood relationships. Generated networks exhibit high clustering coefficients, sparse connectivity, and positive assortativity. Validation is made against high school friendship network dataset. Statistical analysis shows the model produces significantly higher clustering and assortativity compared to random graph models (p \< 0.05). The model's parameterization enables generation of artificial social networks while maintaining realistic structural properties, supporting research on social network dynamics and relationship formation mechanisms.
+This research project presents a generative model for social network formation based on homophily and triadic closure. The model generates network structures by evaluating agent similarity metrics and shared neighborhood relationships. Generated networks exhibit high clustering coefficients, sparse connectivity, and positive assortativity. Validation is made against high school friendship network dataset. Statistical analysis shows the model produces significantly higher clustering and assortativity compared to random graph models ($p < 0.05$). The model's parameterization enables generation of artificial social networks while maintaining realistic structural properties, supporting research on social network dynamics and relationship formation mechanisms.
 
 Keywords: Social Networks · Homophily · Random graph · Triadic Closure · Network model
 
@@ -21,7 +19,7 @@ Keywords: Social Networks · Homophily · Random graph · Triadic Closure · Net
 
 ### Motivations
 
-Network science has made significant strides in understanding complex systems through computational models that capture essential properties of real-world networks. The classical models - Erdős-Rényi random graphs [\[3\]](#reference-3), Watts-Strogatz small-world networks [\[10\]](#reference-10), and Barabási-Albert preferential attachment [\[1\]](#reference-1) have demonstrated how simple rules can generate networks with specific structural properties observed in real systems. Throughout this course, I developed a strong interest in those computational models that let properties emerge through simple rules. Another exciting driver for me is the sociological process of creating links and relations with others. We may think they're arbitrary, that we choose with whom we are creating those links, but we're ultimately governed by biases that shape the way we form social relationships.
+Network science has made significant strides in understanding complex systems through computational models that capture essential properties of real-world networks. The classical models - Erdős-Rényi random graphs [\[3\]](#reference-3), Watts-Strogatz small-world networks [\[10\]](#reference-10), and Barabási-Albert preferential attachment [\[1\]](#reference-1) - have demonstrated how simple rules can generate networks with specific structural properties observed in real systems. Throughout this course, I developed a strong interest in those computational models that let properties emerge through simple rules. Another exciting driver for me is the sociological process of creating links and relations with others. We may think they're arbitrary, that we choose with whom we are creating those links, but we're ultimately governed by biases that shape the way we form social relationships.
 
 I saw an opportunity, with the research project, to create my own model, based on underlying social behaviors - specifically how people form friendships in real life. The model implements two social mechanisms that explain how people form friendships: homophily and triadic closure. Homophily describes how individuals connect with others who share similar characteristics. This occurs in two ways: through shared environments (induced homophily), such as workplaces where similar people naturally meet, and through 'active choices' (choice-based homophily), where people seek connections with similar others. Despite being called "choice-based" homophily, this connection preference is rarely conscious. People's social connections emerge from subtle biases and unconscious preferences for similar others, rather than deliberate choices about whom to be friend based on shared traits. Research consistently shows this "birds of a feather" effect across various social settings, from schools to professional networks.
 
@@ -80,7 +78,7 @@ where:
 
 Density [3](#eq-density) is not a metric that will differentiate our model from a random graph such as ER [\[3\]](#reference-3), but it is used to direct the search for parameters and to converge towards a network with a high clustering rate without ending up with a complete graph.
 
-Network assortativity reflects patterns in how nodes connect based on their degree. In social networks, we typically observe weak positive assortativity (0.1-0.4), indicating people tend to form friendships with others of similar social activity levels, but this tendency isn't strong. Networks with negative assortativity (-0.1 to -0.5) show high-degree nodes primarily connecting to low-degree nodes, common in technological infrastructures like power grids. Strong positive assortativity (\>0.5) creates highly segregated communities where popular individuals cluster together while less connected nodes form separate groups. This property helps characterize network type and formation processes - social networks rarely show strong positive or negative assortativity, instead maintaining a moderate positive value that allows for social mixing while preserving some degree-based affinity.
+Network assortativity reflects patterns in how nodes connect based on their degree. In social networks, we typically observe weak positive assortativity ($0.1$-$0.4$), indicating people tend to form friendships with others of similar social activity levels, but this tendency isn't strong. Networks with negative assortativity ($-0.1$ to $-0.5$) show high-degree nodes primarily connecting to low-degree nodes, common in technological infrastructures like power grids. Strong positive assortativity ($> 0.5$) creates highly segregated communities where popular individuals cluster together while less connected nodes form separate groups. This property helps characterize network type and formation processes - social networks rarely show strong positive or negative assortativity, instead maintaining a moderate positive value that allows for social mixing while preserving some degree-based affinity.
 
 It is given by:
 
@@ -121,7 +119,7 @@ My model assumes undirected relationships, meaning that a connection between two
 
 ## Model Description
 
-Each node $i$ represents an individual in a social network and is associated with a set of categorical attributes $\mathcal{F}_i$. These attributes reflect real-world categories such as occupation, cultural interests, or neighborhood affiliation. we posit that nodes sharing more attributes are more likely to connect, following the principle of homophily, which holds that similarity fosters interpersonal ties. Additionally, we incorporate triadic closure, the tendency that two people with a mutual acquaintance are more likely to form a tie.
+Each node $i$ represents an individual in a social network and is associated with a set of categorical attributes $\mathcal{F}_i$. These attributes reflect real-world categories such as occupation, cultural interests, or neighborhood affiliation. We posit that nodes sharing more attributes are more likely to connect, following the principle of homophily, which holds that similarity fosters interpersonal ties. Additionally, we incorporate triadic closure, the tendency that two people with a mutual acquaintance are more likely to form a tie.
 
 Each node $i$ has a set of features $\mathcal{F}_i$. We measure the pairwise similarity between nodes $i$ and $j$ using the Jaccard coefficient:
 
@@ -132,7 +130,7 @@ $$
 \tag{5}
 $$
 
-Larger values of $\text{Sim}(i, j)$ indicate that the two nodes share a greater proportion of their attributes. The given $Sim(i, j)$ is normalized.
+Larger values of $\text{Sim}(i, j)$ indicate that the two nodes share a greater proportion of their attributes. The given $\text{Sim}(i, j)$ is normalized.
 
 To determine whether an edge forms, we convert the similarity score into a probability using a logistic function:
 
@@ -180,9 +178,9 @@ This model design captures previously discussed tendencies, namely that (1) indi
 
 ### Empirical data
 
-The empirical dataset from a high school friendship network corroborate the previously discussed properties. It has a low density (0.029), with students connecting to only a small fraction of possible peers. The high clustering coefficient (0.539) indicates strong friend-of-friend relationships, where students form tight-knit social groups. Students maintain on average 3.85 friendships, The positive assortativity (0.413) shows students tend to befriend others with similar numbers of connections, though this tendency remains moderate.
+The empirical dataset from a high school friendship network corroborate the previously discussed properties. It has a low density ($0.029$), with students connecting to only a small fraction of possible peers. The high clustering coefficient ($0.539$) indicates strong friend-of-friend relationships, where students form tight-knit social groups. Students maintain on average $3.85$ friendships. The positive assortativity ($0.413$) shows students tend to befriend others with similar numbers of connections, though this tendency remains moderate.
 
-The degree distribution of our empirical high school friendship network [1](#fig-empirical-degree-distribution) shows a right-skewed pattern typical of social networks. Most students maintain 2–3 friendships, with fewer students having very high numbers of connections. This distribution differs from both random networks (which would show a normal distribution) and scale-free networks (which would follow a power law), aligning with known patterns in friendship networks.
+The degree distribution of our empirical high school friendship network [1](#fig-empirical-degree-distribution) shows a right-skewed pattern typical of social networks. Most students maintain $2$-$3$ friendships, with fewer students having very high numbers of connections. This distribution differs from both random networks (which would show a normal distribution) and scale-free networks (which would follow a power law), aligning with known patterns in friendship networks.
 
 <span id="fig-empirical-degree-distribution"></span>
 
@@ -210,11 +208,11 @@ Table 1. Model Parameters for the Triadic Homophily Graph results
 
 <span id="tab:parameters" data-label="tab:parameters"></span>
 
-The generated networks ($n=150$) averaged over $t = 200$ runs, have a clustering coefficient of 0.47 ± 0.03, density of 0.04 ± 0.004, assortativity of 0.39 ± 0.11, and average degree of 5.71 ± 0.57.
+The generated networks ($n=150$) averaged over $t = 200$ runs have a clustering coefficient of $0.47 \pm 0.03$, density of $0.04 \pm 0.004$, assortativity of $0.39 \pm 0.11$, and average degree of $5.71 \pm 0.57$.
 
 These metrics show a slightly less strong clustering coefficient compared to the empirical results and the average degree is a little higher, but we can still consider them satisfactory, particularly in view of its accurate assortativity.
 
-The model generates a degree distribution averaged over $t = 200$ run [2](#fig-model-degree-distribution), that follows the same right-skewed pattern, with a slightly higher average degree at 5–6 connections. The distribution shows more spread than the empirical data, extending up to 20 connections, but maintains the characteristic social network property of having few nodes with very high degrees. The presence of nodes with zero connections and the gradual tail decay suggests my model captures both social isolation and the limits on friendship formation.
+The model generates a degree distribution averaged over $t = 200$ run [2](#fig-model-degree-distribution), that follows the same right-skewed pattern, with a slightly higher average degree at $5$-$6$ connections. The distribution shows more spread than the empirical data, extending up to 20 connections, but maintains the characteristic social network property of having few nodes with very high degrees. The presence of nodes with zero connections and the gradual tail decay suggests my model captures both social isolation and the limits on friendship formation.
 
 <span id="fig-model-degree-distribution"></span>
 
@@ -224,11 +222,11 @@ Fig. 2. Model degree distribution
 
 <span id="fig-example-generationl"></span>
 
-![Example network generation with the fine-tuned parameters : [1](#tab-parameters)](../../assets/projects/homophily-and-triadic-closure/model_example_generation.png)
+![Example network generation with the fine-tuned parameters: [1](#tab-parameters)](../../assets/projects/homophily-and-triadic-closure/model_example_generation.png)
 
-Fig. 3. Example network generation with the fine-tuned parameters : [1](#tab-parameters)
+Fig. 3. Example network generation with the fine-tuned parameters: [1](#tab-parameters)
 
-The visualized network [3](#fig-example-generationl) have clear community structures with dense local clusters, Several highly connected cores are visible, surrounded by less connected peripheral nodes. The presence of isolates and small components mirrors empirical patterns. We also observe the presence of Hub transiting nodes, which is also present in our empirical friendship graph.
+The visualized network [3](#fig-example-generationl) have clear community structures with dense local clusters. Several highly connected cores are visible, surrounded by less connected peripheral nodes. The presence of isolates and small components mirrors empirical patterns. We also observe the presence of Hub transiting nodes, which is also present in our empirical friendship graph.
 
 ### Significance
 
@@ -236,17 +234,17 @@ To evaluate the statistical significance of the observed metrics in my model, we
 
 We focused on clustering coefficient and assortativity for the p-value test because these metrics are directly characteristic of the alternative hypothesis ($H_1$). Specifically, $H_1$ asserts that the network's structure is shaped by the principles of homophily and triadic closure, which are inherently tied to the formation of tightly-knit clusters and positive assortative mixing. Other metrics, such as average degree, while useful in guiding parameter selection during model development, are not as representative of the hypothesis. For example, the average degree reflects the overall connectivity of the network, but it does not capture the nuanced patterns of local clustering or the preferential mixing of similar nodes that my model seeks to explain. By focusing on clustering and assortativity, we ensure that the p-value test evaluates the metrics most relevant to the core principles underlying the model.
 
-The simulation, averaged over $n = 200$ runs, yielded an observed mean clustering coefficient of 0.461±0.027 and a mean assortativity of 0.374±0.125. Both metrics showed p-values of 0, meaning that the likelihood of obtaining these results under the null hypothesis is effectively zero. These findings strongly reject the null hypothesis, confirming that the clustering and assortative mixing patterns observed in the network are statistically significant and distinct from random graphs. This highlights the role of the model's design in shaping meaningful network structures.
+The simulation, averaged over $n = 200$ runs, yielded an observed mean clustering coefficient of $0.461 \pm 0.027$ and a mean assortativity of $0.374 \pm 0.125$. Both metrics showed $p$-values of $0$, meaning that the likelihood of obtaining these results under the null hypothesis is effectively zero. These findings strongly reject the null hypothesis, confirming that the clustering and assortative mixing patterns observed in the network are statistically significant and distinct from random graphs. This highlights the role of the model's design in shaping meaningful network structures.
 
 ## Discussion
 
 ### Results
 
-The results are highly encouraging. My model successfully generates networks with a high clustering coefficient, while maintaining a low density and positive assortativity, however the generated networks exhibit a higher average degree compared to the empirical dataset. Fine-tuning the parameters to reduce this average degree mechanically introduced a decline in clustering, I haven't managed to find a happy medium that fully satisfies me.
+The results are highly encouraging. My model successfully generates networks with a high clustering coefficient, while maintaining a low density and positive assortativity; however, the generated networks exhibit a higher average degree compared to the empirical dataset. Fine-tuning the parameters to reduce this average degree mechanically introduced a decline in clustering. I haven't managed to find a happy medium that fully satisfies me.
 
 The graphical interpretation of the networks reveals distinct communities and disconnected components, reflecting the structure of social networks where not everyone belongs to a single interconnected group. This aligns well with the nature of social relationships. Nonetheless, it is worth noting that the number of disconnected components in our generated networks is lower than that observed in the empirical data. This suggests that while the model captures key features of social networks, further refinement may be needed to fully replicate the fragmentation seen in the real-world dataset.
 
-I chose to introduce locality in my network model to enforce this disconnected component creation. When a new node $i$ appears, it is connected only to a limited set of existing nodes—specifically, a group of randomly chosen acquaintances and their neighbors. This ensures that connections are formed within a localized context, which boost shared neighbors and preserve the cohesiveness of groups. In contrast to a global approach like Barabási's [\[1\]](#reference-1), where every node is evaluated for connection based on a probability, would dilute the model's ability to replicate the natural formation of tight-knit social clusters. By restricting the pool of potential connections, we align the model more closely with the localized and community-oriented nature of real-world relations. I note, however, that this is not the only way of obtaining localised results. For example, we could have made nodes already present in our graph meet at random and create connections in this way, which is used in Mele's [\[8\]](#reference-8) work.
+I chose to introduce locality in my network model to enforce this disconnected component creation. When a new node $i$ appears, it is connected only to a limited set of existing nodes - specifically, a group of randomly chosen acquaintances and their neighbors. This ensures that connections are formed within a localized context, which boost shared neighbors and preserve the cohesiveness of groups. In contrast to a global approach like Barabási's [\[1\]](#reference-1), where every node is evaluated for connection based on a probability, would dilute the model's ability to replicate the natural formation of tight-knit social clusters. By restricting the pool of potential connections, we align the model more closely with the localized and community-oriented nature of real-world relations. I note, however, that this is not the only way of obtaining localised results. For example, we could have made nodes already present in our graph meet at random and create connections in this way, which is used in Mele's [\[8\]](#reference-8) work.
 
 Early experiments relying solely on homophily failed to replicate key network properties. Incorporating triadic closure was needed, enabling the model to produce networks that align with empirical metrics. This underscores the importance of friend-of-friend relationships in the formation of social networks. This reinforces the idea that the homophily observed in empiric networks is one of the generative components of these topologies, without being the only ingredient. Furthermore, the model abstracts homophily categories into a numerical interface without assigning weights, treating all features equally. While real-world social links often give varying importance to different features, the decision to keep the model unweighted was made to maintain simplicity and focus on the core mechanisms.
 

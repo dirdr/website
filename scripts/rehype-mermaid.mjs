@@ -1,22 +1,16 @@
-import { visit } from 'unist-util-visit';
-
-/** Turn unhighlighted Mermaid fences into source text for the browser renderer. */
 export default function rehypeMermaid() {
-  return (tree) => {
-    visit(tree, 'element', (node) => {
-      if (node.tagName !== 'pre') return;
-
+  return function transform(node) {
+    if (node.type === 'element' && node.tagName === 'pre') {
       const code = node.children[0];
       if (
-        code?.type !== 'element' ||
-        code.tagName !== 'code' ||
-        !code.properties.className?.includes('language-mermaid')
+        code?.tagName === 'code' &&
+        code.properties.className?.includes('language-mermaid')
       ) {
-        return;
+        node.tagName = 'div';
+        node.properties = { className: ['mermaid'], ariaBusy: 'true' };
+        node.children = code.children;
       }
-
-      node.properties.className = ['mermaid'];
-      node.children = code.children;
-    });
+    }
+    for (const child of node.children ?? []) transform(child);
   };
 }

@@ -35,7 +35,7 @@ unfortunately, a lot of denoising algorithms fails to keep fine details of the o
 > u - D_hu
 > $$
 
-The _method noise_ is the difference between the original noisy image $u$ and the denoised (by operator $D_h$) output image $h$ is the filtering parameters, it can represent a filter window size, a denoising threshold, etc.\
+The _method noise_ is the difference between the original noisy image $u$ and the denoised (by operator $D_h$) output image. $h$ is the filtering parameters; it can represent a filter window size, a denoising threshold, etc.\
 The method noise is interesting to benchmark denoising algorithms performance because it visually quantify the loss of quality (details, texture). If a denoising method perform well, the method noise should just contain the original image noise, and contains as little as possible of the original image. For example, if the method noise contains a structure, that mean that this strcture have been removed from the original image, and that this part of the original image will have lost details. The goal of the article with the NL-means method is to propose a performant denoising algorithm, such that structure, texture and details of the original image is kept as much as possible.
 
 ### Hypothesis
@@ -61,8 +61,8 @@ where $\|v(N_i) - v(N_j)\|_{2,a}^2$ is the weighted euclidean distance between t
 
 ![Gaussian Kernel with Standard Deviation a = 0.5](../../assets/blog/non-local-means-denoising/gaussian-kernel.png)
 
-The plot help us visualize the role of the Gaussian kernel: yield more weight to small euclidean distance (similar neighborhoods), and less weight to higher distances. The standard deviation of this Gaussian kernel, $a$ a, is a user-defined parameter that influences the decay of weights based on the similarity of pixel neighborhoods. A larger $a$ a makes the algorithm less sensitive to differences (the weights decrease more slowly with increasing difference), whereas a smaller $a$ makes the algorithm more sensitive to these differences.\
-$h$ known as the filtering parameters, controls the sensitivity of the algorithm to noise, a larger value of h makes the algorithms less sensitive to noise, blurring the image, and a smaller value of $h$ makes the algorithm more sensitive to noise, which could preserve the image details but retain more noise.\
+The plot help us visualize the role of the Gaussian kernel: yield more weight to small euclidean distance (similar neighborhoods), and less weight to higher distances. The standard deviation of this Gaussian kernel, $a$, is a user-defined parameter that influences the decay of weights based on the similarity of pixel neighborhoods. A larger $a$ makes the algorithm less sensitive to differences (the weights decrease more slowly with increasing difference), whereas a smaller $a$ makes the algorithm more sensitive to these differences.\
+$h$ known as the filtering parameters, controls the sensitivity of the algorithm to noise, a larger value of $h$ makes the algorithms less sensitive to noise, blurring the image, and a smaller value of $h$ makes the algorithm more sensitive to noise, which could preserve the image details but retain more noise.\
 $Z(i) = \sum_j e^{\left(-\frac{\|v(N_i) - v(N_j)\|^2}{h^2}\right)}$ is a normalizing factor that ensure that the weights for all pixels $j$ sums to 1 for each pixel $i$.\
 To visualize how to weight expression is modeled, we can plot $\exp({-\frac{x}{h^2}})$ if we put $x=\|v(N_i) - v(N_j)\|_{2,a}^2$ and $h^2 = 1$
 
@@ -70,7 +70,7 @@ To visualize how to weight expression is modeled, we can plot $\exp({-\frac{x}{h
 
 Plot of the function $e^{-x}$
 
-If the similarity between $N_i$ and $N_j$ is high, then $x$ tend to $0$ and $e^{-x}$ tend toward 1. Conversely, if the similarity is low, meaning x get bigger, $e^{-x}$ tends to 0. The higher the similarity between $i$ neighborhood and $j$ neighborhood, the higher the weight of the pixel $j$ is.\
+If the similarity between $N_i$ and $N_j$ is high, then $x$ tend to $0$ and $e^{-x}$ tend toward 1. Conversely, if the similarity is low, meaning $x$ get bigger, $e^{-x}$ tends to 0. The higher the similarity between $i$ neighborhood and $j$ neighborhood, the higher the weight of the pixel $j$ is.\
 we can visualize role of the filtering parameters $h$, by plotting together the same expression, with $h^2 = 1$ and $h^2 = 2$
 
 ![Plot of the functions $e^{-x}$ and $e^{-\frac{x}{h^2}}$ with $h=2$](../../assets/blog/non-local-means-denoising/filtering-parameter.png)
@@ -78,7 +78,7 @@ we can visualize role of the filtering parameters $h$, by plotting together the 
 Plot of the functions $e^{-x}$ and $e^{-\frac{x}{h^2}}$ with $h=2$
 
 With $h=2$, the function is less sensitive, in the plot, the weight decrease less rapidly when the distance between pixels intensities is getting bigger.\
-Authors have fixed the value of $h$ to $10*\sigma$ where $\sigma$ is the standard deviation of the noise added to the image, and the square neighborhoods $N_i$, $N_j$ to 7x7 pixels. they also restrcited the size of the effective search window, although theoretically this search is done throughout the entire image, in practice, for computational purposes, the search window has been restricted to a 21x21 size. However, this restriction doesn’t drastically reduce the algorithm’s performance, since we can imagine that the similarities are spatially close and not distributed throughout the image. I still think that it limits the algorithm’s scope a little, since in certain types of images, patterns generalize throughout the entire figure, so looking for similarities everywhere could allow better denoising.\
+Authors have fixed the value of $h$ to $10 \cdot \sigma$ where $\sigma$ is the standard deviation of the noise added to the image, and the square neighborhoods $N_i$, $N_j$ to $7 \times 7$ pixels. They also restrcited the size of the effective search window, although theoretically this search is done throughout the entire image, in practice, for computational purposes, the search window has been restricted to a $21 \times 21$ size. However, this restriction doesn’t drastically reduce the algorithm’s performance, since we can imagine that the similarities are spatially close and not distributed throughout the image. I still think that it limits the algorithm’s scope a little, since in certain types of images, patterns generalize throughout the entire figure, so looking for similarities everywhere could allow better denoising.\
 
 ### Validation method
 
@@ -165,7 +165,7 @@ We’re going to reproduce the experiment described in the paper published on _I
 
 ### Tests configuration
 
-The first experiences will be conducted with the same photo as **figure 1 of the IPOL article**, downloaded from Flickr, with $\sigma$ is 15. Then, the same photo will be denoised, but with $\sigma = 30$. Finally, we will test the lady photo with a standard deviation of 15, showing also the _method noise_ to compare it with the one provided in the original article
+The first experiences will be conducted with the same photo as **figure 1 of the IPOL article**, downloaded from Flickr, with $\sigma = 15$. Then, the same photo will be denoised, but with $\sigma = 30$. Finally, we will test the lady photo with a standard deviation of 15, showing also the _method noise_ to compare it with the one provided in the original article
 
 ### Results
 

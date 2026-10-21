@@ -5,7 +5,7 @@ export class DigitModel {
     free(): void;
     [Symbol.dispose](): void;
     constructor(bytes: Uint8Array);
-    predict(pixels: Float64Array): Float64Array;
+    predict(pixels: Float32Array): Float32Array;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -15,6 +15,8 @@ export interface InitOutput {
     readonly __wbg_digitmodel_free: (a: number, b: number) => void;
     readonly digitmodel_new: (a: number, b: number) => [number, number, number];
     readonly digitmodel_predict: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly __wbindgen_exn_store: (a: number) => void;
+    readonly __externref_table_alloc: () => number;
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __externref_table_dealloc: (a: number) => void;

@@ -3,6 +3,7 @@ import mdx from '@astrojs/mdx';
 import { defineConfig } from 'astro/config';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
+import rehypeCallouts from './scripts/rehype-callouts.mjs';
 import rehypeMermaid from './scripts/rehype-mermaid.mjs';
 
 export default defineConfig({
@@ -15,12 +16,11 @@ export default defineConfig({
   integrations: [mdx()],
   vite: {
     worker: { format: 'es' },
-    optimizeDeps: { include: ['mermaid'] },
   },
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex, rehypeMermaid],
+      rehypePlugins: [rehypeKatex, rehypeCallouts, rehypeMermaid],
     }),
     syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
     shikiConfig: {

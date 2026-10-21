@@ -229,7 +229,37 @@ h4 {
 }
 
 p {
-  margin: 0 0 1.25rem;
+  margin: 0 0 1rem;
+}
+
+.introduction-copy a,
+.markdown-content a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.title-leader {
+  flex: 1;
+  align-self: center;
+  height: 1px;
+  min-width: 0;
+  margin-left: 0.75rem;
+  opacity: 0.35;
+  background:
+    repeating-linear-gradient(
+        to right,
+        currentColor 0 10px,
+        transparent 10px 16px
+      )
+      left / 33.334% 1px no-repeat,
+    repeating-linear-gradient(
+        to right,
+        currentColor 0 4px,
+        transparent 4px 10px
+      )
+      center / 33.334% 1px no-repeat,
+    repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 6px)
+      right / 33.334% 1px no-repeat;
 }
 
 main > :last-child,
@@ -277,11 +307,73 @@ pre {
   color: color-mix(in srgb, var(--foreground) 75%, var(--background));
 }
 
+.markdown-alert {
+  --callout-color: light-dark(#0969da, #79b8ff);
+  margin-block: 1.5rem;
+  padding: 0.875rem 1rem;
+  border-left: 3px solid var(--callout-color);
+  background: color-mix(in srgb, var(--callout-color) 5%, var(--background));
+  font-size: inherit;
+  line-height: 1.6;
+}
+
+.markdown-alert-tip {
+  --callout-color: light-dark(#1a7f37, #7bd88f);
+}
+
+.markdown-alert-important {
+  --callout-color: light-dark(#8250df, #c5a3ff);
+}
+
+.markdown-alert-warning {
+  --callout-color: light-dark(#916400, #e3b95e);
+}
+
+.markdown-alert-caution {
+  --callout-color: light-dark(#cf222e, #ff939a);
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  color: var(--callout-color);
+  font-weight: 700;
+}
+
+.markdown-alert-title svg {
+  flex-shrink: 0;
+}
+
+.markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+
 .katex-display {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   padding-block: 0.25rem;
+}
+
+.mermaid {
+  display: grid;
+  align-items: center;
+  min-height: 8rem;
+  margin-block: 1.5rem;
+  overflow-x: auto;
+}
+
+.mermaid[aria-busy='true'] {
+  visibility: hidden;
+  font-size: 0;
+}
+
+.mermaid svg {
+  display: block;
+  min-width: 30rem;
+  margin-inline: auto;
 }
 
 article table {
@@ -314,16 +406,6 @@ article td {
   font-family: var(--font-serif);
   font-size: 0.8125rem;
   opacity: 0.65;
-}
-
-.site-footer {
-  padding-block: 1.25rem;
-  border-top: 1px solid
-    color-mix(in srgb, var(--foreground) 15%, var(--background));
-}
-
-.site-footer small {
-  font-size: 0.8125rem;
 }
 
 .skip-link {

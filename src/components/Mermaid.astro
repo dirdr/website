@@ -11,36 +11,79 @@
       (element) => ({ element, source: element.textContent ?? '' }),
     );
     if (diagrams.length === 0) return;
-    const { default: mermaid } = await import('mermaid');
+    let mermaid: typeof import('mermaid').default;
+    try {
+      ({ default: mermaid } = await import('mermaid'));
+    } catch (error) {
+      if (currentGeneration !== generation) return;
+      for (const { element } of diagrams)
+        element.setAttribute('aria-busy', 'false');
+      console.error('Unable to load Mermaid:', error);
+      return;
+    }
     if (currentGeneration !== generation) return;
 
     async function renderDiagrams() {
       if (currentGeneration !== generation) return;
+      const styles = getComputedStyle(document.documentElement);
+      const foreground = styles.getPropertyValue('--foreground').trim();
+      const background = styles.getPropertyValue('--background').trim();
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
-        theme:
-          document.documentElement.dataset.theme === 'dark'
-            ? 'dark'
-            : 'default',
+        theme: 'base',
+        themeVariables: {
+          primaryColor: background,
+          primaryTextColor: foreground,
+          primaryBorderColor: foreground,
+          lineColor: foreground,
+          textColor: foreground,
+          clusterBkg: background,
+          clusterBorder: foreground,
+        },
         fontFamily: 'Charter, Georgia, serif',
+        flowchart: {
+          htmlLabels: false,
+          curve: 'linear',
+          rankSpacing: 32,
+          nodeSpacing: 12,
+        },
       });
 
       for (const { element, source } of diagrams) {
         if (currentGeneration !== generation || !element.isConnected) return;
+        const staging = document.createElement('div');
+        staging.style.cssText = `position:absolute;left:-10000px;visibility:hidden;width:${element.clientWidth}px`;
+        document.body.append(staging);
         try {
           const { svg, bindFunctions } = await mermaid.render(
             `mermaid-${sequence++}`,
             source,
-            element,
+            staging,
           );
           if (currentGeneration !== generation || !element.isConnected) return;
           element.innerHTML = svg;
+          if (element.querySelector('.node.neuron')) {
+            for (const path of element.querySelectorAll<SVGPathElement>(
+              '.flowchart-link',
+            )) {
+              const start = path.getPointAtLength(0);
+              const end = path.getPointAtLength(path.getTotalLength());
+              path.setAttribute(
+                'd',
+                `M${start.x},${start.y}L${end.x},${end.y}`,
+              );
+            }
+          }
+          element.setAttribute('aria-busy', 'false');
           bindFunctions?.(element);
         } catch (error) {
           if (currentGeneration !== generation || !element.isConnected) return;
           element.textContent = source;
+          element.setAttribute('aria-busy', 'false');
           console.error('Unable to render Mermaid diagram:', error);
+        } finally {
+          staging.remove();
         }
       }
     }
