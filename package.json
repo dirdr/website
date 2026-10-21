@@ -14,7 +14,7 @@
     "build": "astro build",
     "build:wasm": "node scripts/build-wasm.mjs",
     "test:wasm": "node --test scripts/test-wasm.mjs",
-    "test:demos": "node --test scripts/test-wasm.mjs scripts/test-molecular.mjs",
+    "test:demos": "node --test scripts/test-wasm.mjs",
     "test:markdown": "node --test scripts/test-markdown.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -23,7 +23,8 @@
     "format:check": "prettier . --check",
     "validate": "npm run format:check && npm run lint && npm run test:demos && npm run test:markdown && npm run check && npm run build",
     "pages:dev": "npm run build && wrangler pages dev",
-    "deploy": "npm run build && wrangler pages deploy --branch=main"
+    "deploy": "npm run build && wrangler pages deploy --branch=main",
+    "build:wasm:molecular": "node scripts/build-molecular.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",

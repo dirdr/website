@@ -12,6 +12,7 @@ export default defineConfig([
     'node_modules/**',
     'wasm/**/target/**',
     'public/demos/**/pkg/**',
+    'public/demos/molecular-visualization/viewer.js',
   ]),
   js.configs.recommended,
   ts.configs.recommended,
