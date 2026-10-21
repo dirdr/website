@@ -24,8 +24,7 @@
     "validate": "npm run format:check && npm run lint && npm run test:demos && npm run test:markdown && npm run check && npm run build",
     "pages:dev": "npm run build && wrangler pages dev",
     "deploy": "npm run build && wrangler pages deploy --branch=main",
-    "build:wasm:molecular": "node scripts/build-molecular.mjs",
-    "test:browser": "playwright test"
+    "build:wasm:molecular": "node scripts/build-molecular.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",
@@ -39,7 +38,6 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.11",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.64.1",
     "eslint": "^10.13.0",
     "eslint-plugin-astro": "^3.2.1",
     "globals": "^17.13.0",

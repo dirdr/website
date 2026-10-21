@@ -13,8 +13,6 @@ export default defineConfig([
     'wasm/**/target/**',
     'public/demos/**/pkg/**',
     'public/demos/molecular-visualization/viewer.js',
-    'test-results/**',
-    'playwright-report/**',
   ]),
   js.configs.recommended,
   ts.configs.recommended,

@@ -8,5 +8,3 @@ wasm/**/target/
 public/demos/**/pkg/
 public/demos/molecular-visualization/viewer.js
 public/demos/molecular-visualization/viewer.d.ts
-test-results/
-playwright-report/
