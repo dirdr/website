@@ -7,7 +7,7 @@ description: A Generative model of social network formation
 ---
 
 > [!NOTE]
-> This page adapts a report I wrote for the _“Complex and Social Network”_ course in the Master in Innovation and Research in Informatics at the Facultat d’Informàtica de Barcelona. The original report is linked above under “Original material source.”
+> This page adapts a report I wrote for the _“Complex and Social Network”_ course of the Master in Innovation and Research in Informatics at the Facultat d’Informàtica de Barcelona. The original report is linked above under “Original material source.”
 
 ## Abstract
 

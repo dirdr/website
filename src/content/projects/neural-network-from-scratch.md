@@ -36,6 +36,7 @@ layer by layer:
 3. ReLU activation function
 4. 10 neurons dense layer (conceptually, one neuron per digit)
 5. Softmax activation function, to convert values to probabilities
+   Can you guess what is this molecule ?
 
 The numbers between 0 and 1 found inside the neurons in the final layer are the network's predictions.
 
