@@ -18,7 +18,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
             <div class="blog-copy">
               <h2>
                 <span>{post.data.title}</span>
-                <span class="title-leader" aria-hidden="true" />
               </h2>
               {post.data.description && <p>{post.data.description}</p>}
             </div>

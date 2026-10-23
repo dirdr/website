@@ -31,7 +31,7 @@ function resetScores() {
   rows.forEach(({ row, meter, score }) => {
     row.removeAttribute('data-best');
     meter.value = 0;
-    score.textContent = '—';
+    score.textContent = '';
   });
 }
 
@@ -202,7 +202,7 @@ worker.onmessage = (event: MessageEvent) => {
       rows.forEach(({ row, meter, score }, digit) => {
         row.toggleAttribute('data-best', digit === best);
         meter.value = scores[digit]!;
-        score.textContent = `${Math.round(scores[digit]! * 100)}%`;
+        score.textContent = scores[digit]!.toFixed(2);
       });
     }
     if (queued) {

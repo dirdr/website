@@ -3,7 +3,7 @@ title: A Homophily and Triadic Closure model of Social Networks
 year: 2025
 repository: https://github.com/dirdr/a_homophily_and_triadic_closure_model_of_social_networks
 originalMaterial: https://github.com/dirdr/a_homophily_and_triadic_closure_model_of_social_networks/blob/main/research_project_adrien_pelfresne.pdf
-description: Generative model of social network formation
+description: A Generative model of social network formation
 ---
 
 > [!NOTE]

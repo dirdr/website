@@ -238,30 +238,6 @@ p {
   text-underline-offset: 0.2em;
 }
 
-.title-leader {
-  flex: 1;
-  align-self: center;
-  height: 1px;
-  min-width: 0;
-  margin-left: 0.75rem;
-  opacity: 0.35;
-  background:
-    repeating-linear-gradient(
-        to right,
-        currentColor 0 10px,
-        transparent 10px 16px
-      )
-      left / 33.334% 1px no-repeat,
-    repeating-linear-gradient(
-        to right,
-        currentColor 0 4px,
-        transparent 4px 10px
-      )
-      center / 33.334% 1px no-repeat,
-    repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 6px)
-      right / 33.334% 1px no-repeat;
-}
-
 main > :last-child,
 article > :last-child,
 .markdown-content > :last-child {

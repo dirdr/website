@@ -3,38 +3,41 @@ title: 'Deep learning: Neural Network from scratch'
 year: 2024
 repository: https://github.com/dirdr/neural_network_from_scratch
 originalMaterial: https://github.com/dirdr/neural_network_from_scratch/blob/main/report/nn_from_scratch.pdf
-description: creating a neural network library to solve the mnist dataset
+description: Creating our neural network library (from scratch) to predict hand written digits
 authors:
   - Adrien PELFRESNE
   - Alexis VAPAILLE
 ---
 
 > [!NOTE]
-> This page adapts a report we wrote with Alexis VAPAILLE for the _“Deep Learning”_ course in ESIEE Paris. The original report is linked above under “Original material source.”
+> This project page adapts a report we wrote with Alexis VAPAILLE for the _“Deep Learning”_ course in ESIEE Paris. The original report is linked above under “Original material source.”
 >
-> This page covers the initial implementation. Alexis has since improved the code:
+> Alexis has since improved the code with:
 >
-> - Reorganized layer modules.
+> - reorganized layer modules.
 > - f32 tensor system with storage, layouts, strides, and tensor operations.
-> - MacOS Metal GPU backend.
-> - Updated layer APIs, and device selection
-> - Confusion matrices and expanded classification metrics, including macro/weighted precision, recall, and F1.
+> - macOS Metal GPU backend.
+> - updated layer APIs, and device selection
+> - confusion matrices and expanded classification metrics, including macro/weighted precision, recall, and F1.
 
 ## Play
 
-Before the theory deep dive, please try out our model! It run locally in your browser, through a WebAssembly port of the latest upstream rust code
+Before dive deeping, please try out our neural net (magic) capabilities! It run locally in your browser, with the help of WebAssembly
 
 <web-demo data-src="/demos/neural-network/" data-title="Draw a digit"></web-demo>
 
-![Neural net go brr: WebAssembly inference in the browser.](../../assets/projects/neural-network-from-scratch/neural-go-brr.png)
+The neural network is stored as binary representation, have 101,770 trainable parameters (with biases) and weight 102.7 KB. It has been trained on 50 thousands images,
+for 20 epochs, using cross-entropy loss and stochastic gradient descent, it achieved 97.73% accuracy on an unseen test dataset.
 
-The model flattens the 28x28 Grayscale image then passes it through:
+layer by layer:
 
-784 inputs -> Dense (128 neurons) -> ReLU -> Dense (10 neurons) → Softmax
+1. 784 neurons input layer (flat 28x28 image)
+2. 128 neurons dense layer
+3. ReLU activation function
+4. 10 neurons dense layer (conceptually, one neuron per digit)
+5. Softmax activation function, to convert values to probabilities
 
-The outputs give a probability for each digit.The network has 101,770 trainable parameters, including biases, stored in a 102.7 KB model file.
-
-I trained it on 50,000 images for 20 epochs using cross-entropy loss and SGD, learning rate of 0.12, batches of 100. It achieved 97.73% accuracy on the 10,000 images of the test data set.
+The numbers between 0 and 1 found inside the neurons in the final layer are the network's predictions.
 
 ## Abstract
 

@@ -1,16 +1,12 @@
 ---
 title: 'Article review : Image processing'
-description: a non local algorithm for image denoising
+description: A non local algorithm for image denoising
 lastEdited: 2023-12-05
 authors:
   - Adrien PELFRESNE
   - Alexis VAPAILLE
 originalMaterial: https://github.com/dirdr/image_processing_review/blob/main/main.pdf
 ---
-
-## Article synthesis
-
-### Context
 
 _A non local algorithm for image denoising_ \[[1](#ref-nlmeans)\] is an article about image denoising, which is the process of reducing or removing noise from a digital image or photo.\
 Noise can be caused by various factor, including :
@@ -57,7 +53,7 @@ $$
 w(i,j) = \frac{1}{Z(i)}e^{-\frac{\|v(N_i) - v(N_j)\|_{2,a}^2}{h^2}}
 $$
 
-where $\|v(N_i) - v(N_j)\|_{2,a}^2$ is the weighted euclidean distance between the intensity vectors of pixels neighborhoods $N_i$ and $N_j$. The weight are scaled by a Gaussian kernel.\
+where $\|v(N_i) - v(N_j)\|_{2,a}^2$ is the weighted euclidean distance between the intensity vectors of pixels neighborhoods $N_i$ and $N_j$. The weight are scaled by a Gaussian kernel.
 
 ![Gaussian Kernel with Standard Deviation a = 0.5](../../assets/blog/non-local-means-denoising/gaussian-kernel.png)
 
@@ -78,7 +74,7 @@ we can visualize role of the filtering parameters $h$, by plotting together the 
 Plot of the functions $e^{-x}$ and $e^{-\frac{x}{h^2}}$ with $h=2$
 
 With $h=2$, the function is less sensitive, in the plot, the weight decrease less rapidly when the distance between pixels intensities is getting bigger.\
-Authors have fixed the value of $h$ to $10 \cdot \sigma$ where $\sigma$ is the standard deviation of the noise added to the image, and the square neighborhoods $N_i$, $N_j$ to $7 \times 7$ pixels. They also restrcited the size of the effective search window, although theoretically this search is done throughout the entire image, in practice, for computational purposes, the search window has been restricted to a $21 \times 21$ size. However, this restriction doesn’t drastically reduce the algorithm’s performance, since we can imagine that the similarities are spatially close and not distributed throughout the image. I still think that it limits the algorithm’s scope a little, since in certain types of images, patterns generalize throughout the entire figure, so looking for similarities everywhere could allow better denoising.\
+Authors have fixed the value of $h$ to $10 \cdot \sigma$ where $\sigma$ is the standard deviation of the noise added to the image, and the square neighborhoods $N_i$, $N_j$ to $7 \times 7$ pixels. They also restrcited the size of the effective search window, although theoretically this search is done throughout the entire image, in practice, for computational purposes, the search window has been restricted to a $21 \times 21$ size. However, this restriction doesn’t drastically reduce the algorithm’s performance, since we can imagine that the similarities are spatially close and not distributed throughout the image. I still think that it limits the algorithm’s scope a little, since in certain types of images, patterns generalize throughout the entire figure, so looking for similarities everywhere could allow better denoising.
 
 ### Validation method
 
@@ -102,7 +98,7 @@ Figure 4 of the article \[[1](#ref-nlmeans)\], showing the method noise for a va
 
 Figure 4 of the **original article**, method noise, from left to right and from top to bottom: original image, Gaussian filtering, anisotropic filtering, total variation minimization, neighborhood filtering and NL-means algorithm
 
-This result show us that local smoothing algorithms remove important structure of the original image, the least efficient algorithms under this test are Gaussian smoothing, anisotropic filtering and total variation minimization, the best performing algorithm is the NL-means algorithm, because the method noise does not show clear structure, and is only composed of noise, meaning that the algorithm have not removed important details of the original image.\
+This result show us that local smoothing algorithms remove important structure of the original image, the least efficient algorithms under this test are Gaussian smoothing, anisotropic filtering and total variation minimization, the best performing algorithm is the NL-means algorithm, because the method noise does not show clear structure, and is only composed of noise, meaning that the algorithm have not removed important details of the original image.
 
 | Image  | GF  | AF  | TVF | YNF | NL  |
 | :----- | :-: | :-: | :-: | :-: | :-: |
@@ -111,13 +107,13 @@ This result show us that local smoothing algorithms remove important structure o
 
 Table 1 of the **original article** comparing MSE values for various denoising algorithms
 
-The table show that the NL-means have the lowest MSE of all algorithms, and with a notable difference.\
+The table show that the NL-means have the lowest MSE of all algorithms, and with a notable difference.
 
 ![Figure 5 of the **original article**. Denoising experience on a natural image. From left to right and from top to bottom: noisy image ($\sigma = 20$), Gauss filtering, anisotropic filtering, Total variation, Neighborhood filtering and NL- means algorithm.](../../assets/blog/non-local-means-denoising/visual_quality.png)
 
 Figure 5 of the **original article**. Denoising experience on a natural image. From left to right and from top to bottom: noisy image ($\sigma = 20$), Gauss filtering, anisotropic filtering, Total variation, Neighborhood filtering and NL- means algorithm.
 
-On this last evaluation criteria, it is also NL-means that wins, it removes the most noise while not blurring the image.\
+On this last evaluation criteria, it is also NL-means that wins, it removes the most noise while not blurring the image.
 
 ### Personal opinion
 
@@ -132,7 +128,7 @@ The authors have published, on the _IPOL Journal_ \[[3](#ref-nlmeanscode)\] a us
 
 #### RGB Images
 
-An RGB image is described as $u=(u_1, u_2, u_3)$ where $u_1, u_2, u_3$ are the red, green and blue channels. the formula for calculating the Euclidean distance between intensity vectors has been adapted to take account RGB channels.\
+An RGB image is described as $u=(u_1, u_2, u_3)$ where $u_1, u_2, u_3$ are the red, green and blue channels. the formula for calculating the Euclidean distance between intensity vectors has been adapted to take account RGB channels.
 
 $$
 \begin{aligned}
@@ -183,7 +179,7 @@ The first experiences will be conducted with the same photo as **figure 1 of the
 
 NL-means denoising _Colors of Burano_ \[[5](#ref-color)\] comparaison with $\sigma = 15$
 
-With a standard deviation equal to 15, we find that the algorithm manages to remove the noise well, while keeping the colors clear, and above all by not removing a lot of detail from the image, the textures are a little smoothed, but overall, the structure of the buildings and the color boundaries are well preserved.\
+With a standard deviation equal to 15, we find that the algorithm manages to remove the noise well, while keeping the colors clear, and above all by not removing a lot of detail from the image, the textures are a little smoothed, but overall, the structure of the buildings and the color boundaries are well preserved.
 
 - ![original image](../../assets/blog/non-local-means-denoising/original_30.png)
 
@@ -199,7 +195,7 @@ With a standard deviation equal to 15, we find that the algorithm manages to rem
 
 NL-means denoising _Colors of Burano_ \[[5](#ref-color)\] comparaison with $\sigma = 30$
 
-When we push the standard deviation of the added noise to 30, which adds very aggressive noise to the image, this is where the implementation really shines, we find the result is really great.\
+When we push the standard deviation of the added noise to 30, which adds very aggressive noise to the image, this is where the implementation really shines, we find the result is really great.
 
 - ![original image](../../assets/blog/non-local-means-denoising/original_lady.png)
 
@@ -257,7 +253,7 @@ The result is quite good, although the hairs have been blurred a little, the ima
 
 <span id="ref-wikigaussiannoise"></span>
 
-\[2\] <span class="nocase">W. contributors</span>. <span class="nocase">Additive white Gaussian noise Wikipedia</span>. 2023. [https://en.wikipedia.org/w/index.php?title=Additive_white_Gaussian_noise. ](https://en.wikipedia.org/w/index.php?title=Additive_white_Gaussian_noise)Online; accessed 24-November-2023
+\[2\] <span class="nocase">W. contributors</span>. <span class="nocase">Additive white Gaussian noise Wikipedia</span>. 2023. [https://en.wikipedia.org/w/index.php?title=Additive_white_Gaussian_noise.](https://en.wikipedia.org/w/index.php?title=Additive_white_Gaussian_noise)Online; accessed 24-November-2023
 
 <span id="ref-nlmeanscode"></span>
 
@@ -269,11 +265,11 @@ The result is quite good, although the hairs have been blurred a little, the ima
 
 <span id="ref-color"></span>
 
-\[5\] H. BRY. <span class="nocase">Colors of Burano</span>. [https://www.flickr.com/photos/setaou/2162752903/. ](https://www.flickr.com/photos/setaou/2162752903/)Accessed: 29/10/2023
+\[5\] H. BRY. <span class="nocase">Colors of Burano</span>. [https://www.flickr.com/photos/setaou/2162752903/.](https://www.flickr.com/photos/setaou/2162752903/)Accessed: 29/10/2023
 
 <span id="ref-ladyhat"></span>
 
-\[6\] Unknown. <span class="nocase">Lady with hat</span>. [https://ipolcore.ipol.im/api/archive/staticData/blobs/b/c/bc22f841464ab2b6432cc6185bd509208980af22.png. ](https://ipolcore.ipol.im/api/archive/staticData/blobs/b/c/bc22f841464ab2b6432cc6185bd509208980af22.png)Accessed: 29/10/2023
+\[6\] Unknown. <span class="nocase">Lady with hat</span>. [https://ipolcore.ipol.im/api/archive/staticData/blobs/b/c/bc22f841464ab2b6432cc6185bd509208980af22.png.](https://ipolcore.ipol.im/api/archive/staticData/blobs/b/c/bc22f841464ab2b6432cc6185bd509208980af22.png)Accessed: 29/10/2023
 
 <span id="ref-cat"></span>
 
